@@ -6,18 +6,15 @@ using System.Web;
 using System.Web.Mvc;
 using Treehouse.FitnessFrog.Data;
 using Treehouse.FitnessFrog.Models;
-
 namespace Treehouse.FitnessFrog.Controllers
 {
     public class EntriesController : Controller
     {
         private EntriesRepository _entriesRepository = null;
-
         public EntriesController()
         {
             _entriesRepository = new EntriesRepository();
         }
-
         public ActionResult Index()
         {
             List<Entry> entries = _entriesRepository.GetEntries();
@@ -38,7 +35,6 @@ namespace Treehouse.FitnessFrog.Controllers
 
             return View(entries);
         }
-
         public ActionResult Add()
         {
             var entry = new Entry()
@@ -51,6 +47,10 @@ namespace Treehouse.FitnessFrog.Controllers
         [HttpPost]
         public ActionResult Add(Entry entry)
         {
+            if (ModelState.IsValidField("Duration") && entry.Duration <= 0)
+            {
+                ModelState.AddModelError("Duration", "The Duration field value must be greater than '  S0'.")
+            }
             if (ModelState.IsValid)
             {
                 _entriesRepository.AddEntry(entry);
@@ -60,7 +60,6 @@ namespace Treehouse.FitnessFrog.Controllers
             ViewBag.ActivitiesSelectListItems = new SelectList(Data.Data.Activities, "Id", "Name");
             return View(entry);
         }
-
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -70,7 +69,6 @@ namespace Treehouse.FitnessFrog.Controllers
 
             return View();
         }
-
         public ActionResult Delete(int? id)
         {
             if (id == null)
